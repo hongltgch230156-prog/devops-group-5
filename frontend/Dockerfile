@@ -23,3 +23,41 @@
 # ===========================================
 
 # YOUR CODE HERE:
+    
+# =========================
+# Builder Stage
+# =========================
+FROM node:18-alpine AS builder
+
+WORKDIR /app
+
+# Copy package files
+COPY package.json ./
+
+# Install dependencies fresh (ignoring lock file to resolve correct versions)
+RUN npm install --legacy-peer-deps
+
+# Copy source code
+COPY . .
+
+# Build React production app
+RUN npm run build
+
+# =========================
+# Production Stage
+# =========================
+FROM node:18-alpine
+
+WORKDIR /app
+
+# Install serve package
+RUN npm install -g serve
+
+# Copy React build files
+COPY --from=builder /app/build ./build
+
+# Expose frontend port
+EXPOSE 3000
+
+# Run frontend
+CMD ["serve", "-s", "build", "-l", "3000"]
