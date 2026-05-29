@@ -2,12 +2,35 @@ name: CI/CD Pipeline
 
 on:
   pull_request:
-    branches:
-      - main
+    branches: [main]
+  push:
+    branches: [main]
 
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: todo_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd="pg_isready -U postgres"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+
+    env:
+      DB_HOST: localhost
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+      DB_NAME: todo_test
+      DB_PORT: 5432
 
     steps:
       - name: Checkout code
@@ -16,4 +39,75 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 18.x
+          cache: npm
+
+      # ======================
+      # BACKEND TEST
+      # ======================
+      - name: Install backend dependencies
+        working-directory: ./backend
+        run: npm ci
+
+      - name: Run backend tests
+        working-directory: ./backend
+        run: npm test
+
+      # ======================
+      # FRONTEND BUILD
+      # ======================
+      - name: Install frontend dependencies
+        working-directory: ./frontend
+        run: npm ci
+
+      - name: Build frontend
+        working-directory: ./frontend
+        run: npm run build
+
+      # ======================
+      # DOCKER LOGIN
+      # ======================
+      - name: Login to Docker Hub
+        run: echo "${{ secrets.DOCKER_HUB_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_HUB_USERNAME }}" --password-stdin
+
+      # ======================
+      # BUILD & PUSH BACKEND
+      # ======================
+      - name: Build backend Docker image
+        run: docker build -t ${{ secrets.DOCKER_HUB_USERNAME }}/devops-group5-backend:latest ./backend
+
+      - name: Push backend image
+        run: docker push ${{ secrets.DOCKER_HUB_USERNAME }}/devops-group5-backend:latest
+
+      # ======================
+      # BUILD & PUSH FRONTEND
+      # ======================
+      - name: Build frontend Docker image
+        run: docker build -t ${{ secrets.DOCKER_HUB_USERNAME }}/devops-group5-frontend:latest ./frontend
+
+      - name: Push frontend image
+        run: docker push ${{ secrets.DOCKER_HUB_USERNAME }}/devops-group5-frontend:latest
+
+
+  deploy:
+    needs: build-and-test
+    runs-on: ubuntu-latest
+
+    # CHỈ deploy khi push main
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+
+    steps:
+      - name: Deploy to server via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            cd /path/to/your-project
+            git pull origin main
+            docker-compose pull
+            docker-compose up -d --build
+
+      - name: Show running containers
+        run: docker ps
