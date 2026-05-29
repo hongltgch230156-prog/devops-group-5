@@ -41,6 +41,9 @@ jobs:
         with:
           node-version: 18.x
           cache: npm
+          cache-dependency-path: |
+            backend/package-lock.json
+            frontend/package-lock.json
 
       # ======================
       # BACKEND TEST (FIXED PATH)
@@ -93,7 +96,7 @@ jobs:
     needs: build-and-test
     runs-on: ubuntu-latest
 
-    # CHỈ deploy khi push main
+    # chỉ deploy khi push main
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
 
     steps:
