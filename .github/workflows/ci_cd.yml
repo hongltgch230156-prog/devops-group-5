@@ -43,7 +43,7 @@ jobs:
           cache: npm
 
       # ======================
-      # BACKEND TEST
+      # BACKEND TEST (FIXED PATH)
       # ======================
       - name: Install backend dependencies
         working-directory: ./backend
@@ -54,7 +54,7 @@ jobs:
         run: npm test
 
       # ======================
-      # FRONTEND BUILD
+      # FRONTEND BUILD (FIXED PATH)
       # ======================
       - name: Install frontend dependencies
         working-directory: ./frontend
