@@ -46,7 +46,7 @@ jobs:
             frontend/package-lock.json
 
       # ======================
-      # BACKEND TEST (FIXED PATH)
+      # BACKEND TEST
       # ======================
       - name: Install backend dependencies
         working-directory: ./backend
@@ -57,7 +57,7 @@ jobs:
         run: npm test
 
       # ======================
-      # FRONTEND BUILD (FIXED PATH)
+      # FRONTEND BUILD
       # ======================
       - name: Install frontend dependencies
         working-directory: ./frontend
