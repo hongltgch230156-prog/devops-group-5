@@ -97,6 +97,18 @@ jobs:
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
 
     steps:
+      - name: Debug SSH reachability from runner
+        run: |
+          set -e
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq netcat-traditional traceroute iproute2 || true
+          echo "== nc to SSH host =="
+          nc -vz ${{ secrets.SSH_HOST }} 22 || true
+          echo "== traceroute to SSH host =="
+          traceroute -n ${{ secrets.SSH_HOST }} || true
+          echo "== curl health via public IP =="
+          curl -v --max-time 10 http://${{ secrets.SSH_HOST }}:8080/health || true
+
       - name: Deploy to server via SSH
         uses: appleboy/ssh-action@v1.0.3
         with:
