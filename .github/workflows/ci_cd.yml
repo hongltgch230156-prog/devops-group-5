@@ -39,7 +39,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20.x
+          node-version: 18
           cache: npm
           cache-dependency-path: |
             backend/package-lock.json
@@ -90,3 +90,21 @@ jobs:
 
       - name: Push frontend image
         run: docker push ${{ secrets.DOCKER_HUB_USERNAME }}/devops-group5-frontend:latest
+
+  deploy:
+    needs: build-and-test
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+
+    steps:
+      - name: Deploy to server via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            cd /home/ubuntu/devops-group-5
+            git pull origin main
+            docker compose pull
+            docker compose up -d
