@@ -1,6 +1,10 @@
 const request = require('supertest');
 const app = require('../server');
 
+afterAll(async () => {
+   await app.pool.end(); // đóng DB connection sau khi test xong
+});
+
 describe('Todos API', () => {
    // Test 1: Health check
    it('GET /health should return healthy status', async () => {
