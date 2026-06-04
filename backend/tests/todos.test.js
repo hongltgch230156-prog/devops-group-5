@@ -1,6 +1,10 @@
 const request = require('supertest');
 const app = require('../server');
 
+afterAll(async () => {
+   await app.pool.end(); // đóng DB connection sau khi test xong
+});
+
 describe('Todos API', () => {
    // Test 1: Health check
    it('GET /health should return healthy status', async () => {
@@ -12,6 +16,7 @@ describe('Todos API', () => {
    // Test 2: Get all todos
    it('GET /api/todos should return array', async () => {
       const res = await request(app).get('/api/todos');
+      console.log('ERROR:', res.body);
       expect(res.status).toBe(200);
       expect(Array.isArray(res.body)).toBe(true);
    });

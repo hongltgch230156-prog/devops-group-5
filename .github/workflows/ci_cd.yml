@@ -15,7 +15,7 @@ jobs:
         image: postgres:15
         env:
           POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: postgres
+          POSTGRES_PASSWORD: 123456a@
           POSTGRES_DB: todo_test
         ports:
           - 5432:5432
@@ -28,7 +28,7 @@ jobs:
     env:
       DB_HOST: localhost
       DB_USER: postgres
-      DB_PASSWORD: postgres
+      DB_PASSWORD: 123456a@ 
       DB_NAME: todo_test
       DB_PORT: 5432
 

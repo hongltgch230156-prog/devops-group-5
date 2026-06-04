@@ -17,7 +17,7 @@ const pool = new Pool({
    port: process.env.DB_PORT || 5432,
 });
 
-const initSchema = pool.query(`
+const initSchema = () => pool.query(`
    CREATE TABLE IF NOT EXISTS todos (
       id SERIAL PRIMARY KEY,
       title VARCHAR(255) NOT NULL,
@@ -33,7 +33,7 @@ app.get('/health', (req, res) => {
 // GET todos
 app.get('/api/todos', async (req, res) => {
    try {
-      await initSchema;
+      await initSchema();
       const result = await pool.query('SELECT * FROM todos ORDER BY id');
       res.json(result.rows);
    } catch (err) {
@@ -45,7 +45,7 @@ app.get('/api/todos', async (req, res) => {
 // STUDENT TODO: Add validation to reject empty title
 app.post('/api/todos', async (req, res) => {
    try {
-   await initSchema;
+   await initSchema();
       const { title, completed = false } = req.body;
 
       // STUDENT FIX: Add validation here!
@@ -75,7 +75,7 @@ app.post('/api/todos', async (req, res) => {
 
 app.delete('/api/todos/:id', async (req, res) => {
    try {
-   await initSchema;
+   await initSchema();
       const {id} = req.params;
 
       const result = await pool.query(
@@ -93,7 +93,7 @@ app.delete('/api/todos/:id', async (req, res) => {
 
 app.put('/api/todos/:id', async (req, res) => {
    try {
-   await initSchema;
+   await initSchema();
       const {id} = req.params;
       const {title, completed} = req.body;
 
@@ -122,3 +122,4 @@ if (!process.env.JEST_WORKER_ID) { //process.env.JEST_WORKER_ID !== 'test --> !p
 // STUDENT FIX: Export the app module
 
 module.exports = app
+module.exports.pool = pool;
