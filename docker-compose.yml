@@ -66,7 +66,7 @@ services:
       - DB_PORT=5432
       - DB_NAME=tododb
       - DB_USER=postgres
-      - DB_PASSWORD=123456a@
+      - DB_PASSWORD=${DB_PASSWORD}
     depends_on:
       postgres:
         condition: service_healthy
@@ -86,7 +86,7 @@ services:
     environment:
       - POSTGRES_DB=tododb
       - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=123456a@
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
     volumes:
       - postgres_data:/var/lib/postgresql/data
       - ./database/database.sql:/docker-entrypoint-initdb.d/init.sql
