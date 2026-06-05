@@ -70,6 +70,7 @@ services:
       - DB_NAME=devops_group_5_db
       - DB_USER=devops_group_5_db_user
       - DB_PASSWORD=tNSKb300yaif7h0sAjUIPGDjbMg37GLk
+      - NODE_ENV=production
     depends_on:
       postgres:
         condition: service_healthy
