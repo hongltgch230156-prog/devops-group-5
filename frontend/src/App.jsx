@@ -8,9 +8,15 @@ function App() {
   const [todos, setTodos] = useState([]);
   const [newTodo, setNewTodo] = useState('');
 
-  useEffect(() => {
+useEffect(() => {
+  fetchTodos();
+
+  const interval = setInterval(() => {
     fetchTodos();
-  }, []);
+  }, 5000); // 5 giây
+
+  return () => clearInterval(interval);
+}, []);
 
   const fetchTodos = async () => {
     try {
