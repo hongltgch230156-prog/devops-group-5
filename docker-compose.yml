@@ -65,11 +65,11 @@ services:
     ports:
       - "8080:8080"
     environment:
-      - DB_HOST=postgres
+      - DB_HOST=dpg-d8eolm6q1p3s739ks6e0-a.singapore-postgres.render.com
       - DB_PORT=5432
-      - DB_NAME=tododb
-      - DB_USER=postgres
-      - DB_PASSWORD=123456a@
+      - DB_NAME=devops_group_5_db
+      - DB_USER=devops_group_5_db_user
+      - DB_PASSWORD=tNSKb300yaif7h0sAjUIPGDjbMg37GLk
     depends_on:
       postgres:
         condition: service_healthy

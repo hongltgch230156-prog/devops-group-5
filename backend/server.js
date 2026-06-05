@@ -10,11 +10,14 @@ app.use(express.json());
 
 // BUG #1: Wrong default password - doesn't match docker-compose!
 const pool = new Pool({
-   user: process.env.DB_USER || 'postgres',
-   host: process.env.DB_HOST || 'localhost', //change to service name from docker-compose.yml
-   database: process.env.DB_NAME || 'tododb',
-   password: process.env.DB_PASSWORD || '123456a@', //test password, real passwor matches the POSTGRES_PASSWORD in docker-compose.yml
-   port: process.env.DB_PORT || 5432,
+   user: process.env.DB_USER,
+   host: process.env.DB_HOST,
+   database: process.env.DB_NAME,
+   password: process.env.DB_PASSWORD,
+   port: process.env.DB_PORT,
+   ssl: {
+      rejectUnauthorized: false
+   }
 });
 
 const initSchema = () => pool.query(`
