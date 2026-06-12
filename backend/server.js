@@ -124,5 +124,5 @@ if (!process.env.JEST_WORKER_ID) { //process.env.JEST_WORKER_ID !== 'test --> !p
 
 // BUG #6: App not exported - tests can't import it!
 // STUDENT FIX: Export the app module
-//module.exports = app
+module.exports = app
 module.exports.pool = pool;
